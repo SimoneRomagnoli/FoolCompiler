@@ -121,10 +121,9 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			n.setSuperEntry(hm.get(n.superID));
 			
 			ClassTypeNode clone = (ClassTypeNode)n.superEntry.type;
-			((ClassTypeNode)n.getType()).allFields.addAll(0, clone.allFields);
-			((ClassTypeNode)n.getType()).allMethods.addAll(0, clone.allMethods);
-			
-			entry = new STentry(nestingLevel, new ClassTypeNode(new ArrayList<>(clone.allFields), new ArrayList<>(clone.allMethods)),decOffset--);
+			//((ClassTypeNode)n.getType()).allFields.addAll(0, clone.allFields);
+			//((ClassTypeNode)n.getType()).allMethods.addAll(0, clone.allMethods);
+			entry = new STentry(nestingLevel, new ClassTypeNode(clone), decOffset--);
 		} else {
 			entry = new STentry(nestingLevel, new ClassTypeNode(new ArrayList<>(), new ArrayList<>()) ,decOffset--);
 		}
@@ -136,6 +135,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		
 		Map<String, STentry> virtualTable;
 		if(n.superID != null) {
+			//creo una copia di tutto il contenuto della virtual table della classe da cui sto ereditando
 			virtualTable = new HashMap<>(classTable.get(n.superID));
 		} else {
 			virtualTable = new HashMap<>();
@@ -158,6 +158,9 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				optimizer.add(f.id);
 			}
 			if(virtualTable.containsKey(f.id)) {
+				//se la virtual table contiene gi� un campo con quel nome vuol dire che:
+				// 1. sto ereditando
+				// 2. sto facendo overriding
 				if(virtualTable.get(f.id).type instanceof MethodTypeNode) {
 					System.out.println("Cannot override method id " + f.id + " with a field at line "+ n.getLine());
 					stErrors++;
@@ -165,27 +168,29 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 					//sostituisco nuova STentry alla vecchia preservando l�offset che era nella vecchia STentry
 					f.offset = virtualTable.get(f.id).offset;
 					virtualTable.put(f.id, new STentry(nestingLevel,f.getType(),f.offset));
-					((ClassTypeNode)hm.get(n.id).type).allFields.set(-f.offset-1, f.getType());
+					((ClassTypeNode)entry.type).allFields.set(-f.offset-1, f.getType());
 				}
 			} else {
-				((ClassTypeNode)hm.get(n.id).type).allFields.add(f.getType());
+				((ClassTypeNode)entry.type).allFields.add(f.getType());
 				f.offset = fieldsOffset;
 				virtualTable.put(f.id, new STentry(nestingLevel,f.getType(),fieldsOffset--));
 			}
 		}
 		
-		for (int i=0; i<n.methods.size(); i++) {
-			if(optimizer.contains(n.methods.get(i).id)) {
-				System.out.println("Method id " + n.methods.get(i).id + " already declared in class "+n.id);
+		for (MethodNode m: n.methods) {
+			if(optimizer.contains(m.id)) {
+				System.out.println("Method id " + m.id + " already declared in class "+n.id);
 				stErrors++;
 			} else {
-				optimizer.add(n.methods.get(i).id);
+				optimizer.add(m.id);
 			}
-			visit(n.methods.get(i));
-			if(n.methods.get(i).offset < ((ClassTypeNode)hm.get(n.id).type).allMethods.size()) {
-				((ClassTypeNode)hm.get(n.id).type).allMethods.set(n.methods.get(i).offset, (MethodTypeNode) n.methods.get(i).getType());
+			visit(m);
+			//se l'offset � minore della lunghezza di allMethods vuol dire che ho visitato un metodo gi� dichiarato
+			//quindi sto facendo overriding
+			if(m.offset < ((ClassTypeNode)entry.type).allMethods.size()) {
+				((ClassTypeNode)entry.type).allMethods.set(m.offset, (MethodTypeNode) m.getType());
 			} else {				
-				((ClassTypeNode)hm.get(n.id).type).allMethods.add( (MethodTypeNode) n.methods.get(i).getType());
+				((ClassTypeNode)entry.type).allMethods.add( (MethodTypeNode) m.getType());
 			}
 		}
 		
@@ -203,18 +208,20 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		for (ParNode par : n.parlist) parTypes.add(par.getType()); 
 		
 		if(virtualTable.containsKey(n.id)) {
+			//se la virtual table contiene gi� un metodo con quel nome vuol dire che:
+			// 1. sto ereditando
+			// 2. sto facendo overriding
 			if(!(virtualTable.get(n.id).type instanceof MethodTypeNode)) {
 				System.out.println("Cannot override method id " + n.id + " with a field at line "+ n.getLine());
 				stErrors++;
 			} else {
 				//sostituisco nuova STentry alla vecchia preservando l�offset che era nella vecchia STentry
 				n.offset = virtualTable.get(n.id).offset;
-				//virtualTable.put(n.id, new STentry(nestingLevel, new MethodTypeNode(parTypes,n.retType), n.offset));
 				virtualTable.put(n.id, new STentry(nestingLevel, n.getType(), n.offset));
 			}
 		} else {
+			//decOffset settato in precedenza al primo slot libero (0 se non eredita, n se eredita)
 			n.offset = decOffset;
-			//virtualTable.put(n.id, new STentry(nestingLevel, new MethodTypeNode(parTypes,n.retType),decOffset++));
 			virtualTable.put(n.id, new STentry(nestingLevel, n.getType(),decOffset++));
 		}
 		
