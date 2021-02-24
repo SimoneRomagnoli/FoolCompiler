@@ -9,6 +9,10 @@ let
     fun getWings:int() wings;
     fun canFly:bool() true;
   }
+  
+  class RidingAnimal extends FlyingAnimal (redini:int) {
+  	fun getRedini:int() redini;
+  }
 
   class Photo (a:Animal, fa:Animal) {
     fun getAnimal:Animal() a;
@@ -32,6 +36,8 @@ let
   var saf:Safari = new ExtremeSafari(hippo);
   var parrot:FlyingAnimal = new FlyingAnimal(2,2);
   var photo:Photo = saf.photoWith(parrot);
+  var struzzo:Animal = new RidingAnimal(2,2,2);
       
 in
-  print(if (photo==null) then {0} else {hippo.getPaws()});  
+
+ print(struzzo.getRedini());

@@ -117,9 +117,15 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		//se eredita, il tipo della classe viene creato copiando quello ereditato
 		if(n.superID != null) {
 			
-			// entry della classe ereditata
-			n.setSuperEntry(hm.get(n.superID));
-			
+			// Se eredito, controllo che la classe esista nella class table e recupero la sua entry
+			// dal livello 0 della sym table
+			if(!classTable.containsKey(n.superID)) {
+				System.out.println("Class table does not contain inherited class id " + n.superID);
+				stErrors++;
+			}else {
+				n.setSuperEntry(symTable.get(0).get(n.superID));
+			}
+
 			ClassTypeNode clone = (ClassTypeNode)n.superEntry.type;
 			//((ClassTypeNode)n.getType()).allFields.addAll(0, clone.allFields);
 			//((ClassTypeNode)n.getType()).allMethods.addAll(0, clone.allMethods);
@@ -275,8 +281,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			System.out.println("Class id " + n.id + " at line "+ n.getLine() + " not declared");
 			stErrors++;
 		} else {
-			STentry entry = symTable.get(0).get(n.id);
-			n.entry = entry;
+			// recupero l'stentry della classe
+			n.entry = symTable.get(0).get(n.id);
 			n.nl = nestingLevel;
 		}
 		for (Node arg : n.arglist) visit(arg);

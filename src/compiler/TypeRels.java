@@ -47,7 +47,11 @@ public class TypeRels {
 			if(b instanceof RefTypeNode) {
 			RefTypeNode a1 = (RefTypeNode)a;
 			RefTypeNode b1 = (RefTypeNode)b;
-			return a1.id.equals(b1.id) || superType.containsKey(a1.id) && isSuperType(a1.id, b1.id);
+			//return a1.id.equals(b1.id) || superType.containsKey(a1.id) && isSuperType(a1.id, b1.id);
+			while(!a1.id.equals(b1.id)) {
+				a1.id = (superType.containsKey(a1.id)?superType.get(a1.id):)
+			}
+			
 			} else {
 				return false;
 			}
