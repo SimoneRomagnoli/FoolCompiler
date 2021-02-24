@@ -1,0 +1,14 @@
+let
+
+  class Pair (x:int, y:int) {
+    fun first:int() x;
+    fun second:int() y;
+  }
+  
+  fun couple:Pair(i:int, j:int) 
+    new Pair(i,j);
+  
+  var p:Pair = couple(1,2);
+  
+in
+  print(p.second());

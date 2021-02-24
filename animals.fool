@@ -1,0 +1,37 @@
+let
+
+  class Animal (paws:int) {
+    fun getPaws:int() paws;
+    fun canFly:bool() false;
+  }
+  
+  class FlyingAnimal extends Animal (wings:int) {
+    fun getWings:int() wings;
+    fun canFly:bool() true;
+  }
+
+  class Photo (a:Animal, fa:Animal) {
+    fun getAnimal:Animal() a;
+    fun getFlyingAnimal:Animal() if(fa.canFly()) then {fa} else {null};
+  }  
+
+  class Safari (animal: Animal) {
+    fun getAnimal:Animal() animal;
+    fun photoWith:Photo(fa:FlyingAnimal) if ((fa.getWings()+fa.getPaws())>=5) 
+      then {new Photo(animal, fa)} 
+      else {null};
+  } 
+  
+  class ExtremeSafari extends Safari (animal:Animal) {
+    fun photoWith:Photo(fa:Animal) if(fa.canFly())
+      then {new Photo(animal, fa)}
+      else {null};
+  }
+    
+  var hippo:Animal = new Animal(4);
+  var saf:Safari = new ExtremeSafari(hippo);
+  var parrot:FlyingAnimal = new FlyingAnimal(2,2);
+  var photo:Photo = saf.photoWith(parrot);
+      
+in
+  print(if (photo==null) then {0} else {hippo.getPaws()});  
