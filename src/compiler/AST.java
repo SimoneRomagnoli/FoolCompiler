@@ -333,6 +333,12 @@ public class AST {
 			allFields = f;
 			allMethods = m;
 		}
+		
+		ClassTypeNode(ClassTypeNode c) {
+			allFields = new ArrayList<>(c.allFields);
+			allMethods = new ArrayList<>(c.allMethods);
+		}
+		
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
 	}
