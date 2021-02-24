@@ -108,16 +108,19 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		
 		String dispatchTablesOnHeap = null;
 		for(String s: dispatchTables.get(dispatchTables.size()-1)) {
+			//per ogni metodo scrivo la sua label sullo heap
 			dispatchTablesOnHeap = nlJoin(
 					dispatchTablesOnHeap,
-					"push "+s,
-					"lhp", 		
-					"sw",		//
+					//METTERE s SULLO HEAP
+					"push "+s,  //metto "s" sullo stack
+					"lhp", 		//metto sullo stack il primo indirizzo libero dello heap
+					"sw",		//scrivo "s" nel primo indirizzo libero dello hep
 					
-					"lhp",
+					//INCREMENTO IL REGISTRO $hp
+					"lhp",      
 					"push 1",
 					"add",
-					"shp"		//take hp value, increment it, and put it in hp		
+					"shp"	
 					);
 		}
 		
@@ -130,6 +133,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 	@Override
 	public String visitNode(EmptyNode n) {
 		if (print) printNode(n);
+		//-1 è diverso da qualsiasi object pointer
 		return "push -1";
 	}
 	
@@ -171,24 +175,25 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		for (int i=n.arglist.size()-1;i>=0;i--) argCode=nlJoin(argCode,visit(n.arglist.get(i)));
 		for (int i = 0;i<n.nl-n.entry.nl;i++) getAR=nlJoin(getAR,"lw");
 		return nlJoin(
-			"lfp", 			// load Control Link (pointer to frame of function "id" caller)
-			argCode, 		// generate code for argument expressions in reversed order
-			"lfp", getAR, 	// retrieve address of frame containing "id" declaration
-                          	// by following the static chain (of Access Links)
+			"lfp", 			// carico il control link sullo stack
+			argCode, 		// carico codice per gli argomenti (al contrario)
+			"lfp", 			// recupero il valore dell'AR dove è dichiarata la classe
+			getAR, 			// con risalita della catena statica
 			
 			"push "+n.entry.offset,
-			"add",
-			"lw",			//load value of id variable
+			"add",			//calcolo l'indirizzo della dichiarazione dell'oggetto
+			"lw",			//carico l'object pointer sullo stack (setto l'access link)
 			
 			"stm",
-			"ltm",			//duplicate the value
+			"ltm",			//duplico il valore
 			
 			"ltm",
-			"lw",			//follow the access link
+			"lw",			//seguo l'access link (va al dispatch pointer)
+			
 			"push "+n.methodEntry.offset,
-			"add",
-			"lw",			//retrieve the address of the called method
-			"js"			//jump to the method
+			"add",			//calcolo l'indirizzo del corpo del metodo
+			"lw",			//va all'indirizzp
+			"js"			//jump al metodo
 		);
 	}
 	
@@ -200,29 +205,30 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 			argCode=nlJoin(argCode,visit(n.arglist.get(i)));
 			putArgsOnHeap = nlJoin(putArgsOnHeap, 
 					"lhp", 		
-					"sw",		//in this way I am writing the value on the stack on the heap
+					"sw",		//copio sullo heap il valore che e' sulla cima dello stack
 					
 					"lhp",
 					"push 1",
 					"add",
-					"shp"		//take hp value, increment it, and put it in hp
+					"shp"		//incremento il registro $hp
 					);
 		}
 		return nlJoin(
-				argCode,
-				putArgsOnHeap,
+				argCode,		//metto tutti gli argomenti sullo stack
+				putArgsOnHeap,	//sposto tutti gli argomenti sullo heap
 				
 				"push "+(ExecuteVM.MEMSIZE+n.entry.offset),
-				"lw",
-				"lhp",
-				"sw",		//write in hp the dispatch pointer
+				"lw",			//metto sullo stack l'indirizzo della classe e carico il dispatch pointer
 				
-				"lhp",		//copy object pointer (to be returned) on the stack
+				"lhp",
+				"sw",			//carico il dispatch pointer sullo heap
+				
+				"lhp",			//copio object pointer sullo stack (valore di ritorno)
 				
 				"lhp",
 				"push 1",
 				"add",
-				"shp"		//increment hp
+				"shp"			//incremento $hp
 				);
 	}
 	
@@ -369,7 +375,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 	public String visitNode(OrNode n) {
 		if (print) printNode(n);
 		return nlJoin(
-				//DeMorgan
+			//DeMorgan
 			visit(n.left),
 			"push -1",
 			"mult",
@@ -398,23 +404,27 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 			"lfp", 			// load Control Link (pointer to frame of function "id" caller)
 			argCode, 		// generate code for argument expressions in reversed order
 			"lfp", 			//load object ar (if method) or first ring of the chain (if function)
+			getAR, 			// retrieve address of frame containing "id" declaration
+							// by following the static chain (of Access Links)
+							// se è una chiamata a metodo  allora getAR = "lw" poichè
+			    			// siamo per forza all'interno della classe stessa
 			
-			//change code if 
 			n.entry.type instanceof MethodTypeNode 
-				? nlJoin(
-						"lw",
-						"stm", 			// set $tm to popped value (with the aim of duplicating top of stack)
-						"ltm", 			// load Access Link (pointer to frame of function "id" declaration)
-						"ltm", 			// duplicate top of stack
-						"lw",
+				//se sto chiamando un metodo
+				? nlJoin(			
+						"stm", 			
+						"ltm", 			//duplico l'access link (in $tm) 
+						
+						"ltm", 			
+						"lw",			//seguo l'access link (va al dispatch pointer)
+						
 						"push "+n.entry.offset,
-						"add",
-						"lw",
-						"js"
+						"add",			//calcolo l'indirizzo del corpo del metodo
+						"lw",			//va all'indirizzo
+						"js"			//jump al metodo
 						)
+				//se la chiamata non è a un metodo, resta invariato
 				: nlJoin(
-						getAR, 			// retrieve address of frame containing "id" declaration
-                      					// by following the static chain (of Access Links)
 						"push "+n.entry.offset, 
 						"add",
 						
@@ -443,15 +453,17 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 				"add" // compute address of "id" declaration
 			);
 		
-		//se la variabile ï¿½ una funzione bisogna recuperarne l'indirizzo a offset id - 1
+		//se la variabile e' una funzione bisogna recuperarne l'indirizzo a offset id - 1
 		if(n.entry.type instanceof ArrowTypeNode) {
 			ret = nlJoin(ret,	
+					//copio in $tm la cima dello stack
 					"stm",
 					"ltm",
-					"lw",
-					"ltm",
-					"push 1",
-					"sub"
+					
+					"lw",		//carico il puntatore all'AR di base
+					"ltm",      //riprendo il valore copiato in $tm (offset)
+					"push 1",   
+					"sub"       //sottraggo 1 per raggiungere il corpo della funzione con lw
 					);
 		} 
 		return nlJoin(ret, "lw");
