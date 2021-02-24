@@ -89,6 +89,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 	public String visitNode(ClassNode n) {
 		if (print) printNode(n,n.id);
 		if(n.superID!=null) {
+			//se eredito creo una nuova dispatch table copiando tutto il contenuto da superclasse
 			dispatchTables.add(new ArrayList<>(dispatchTables.get(-n.superEntry.offset-2)));
 		} else {			
 			dispatchTables.add(new ArrayList<>());
@@ -96,19 +97,22 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		
 		for(MethodNode m:n.methods) {
 			visit(m);
+			
 			if(m.offset >= dispatchTables.get(dispatchTables.size()-1).size()) {
 				dispatchTables.get(dispatchTables.size()-1).add(m.label);
-			} else {				
+			} else {	
+				// se la label esiste gi√†, sto facendo ovveriding
 				dispatchTables.get(dispatchTables.size()-1).set(m.offset, m.label);
 			}
 		}
+		
 		String dispatchTablesOnHeap = null;
 		for(String s: dispatchTables.get(dispatchTables.size()-1)) {
 			dispatchTablesOnHeap = nlJoin(
 					dispatchTablesOnHeap,
 					"push "+s,
 					"lhp", 		
-					"sw",		//in this way I am writing the string s on the heap
+					"sw",		//
 					
 					"lhp",
 					"push 1",
@@ -439,7 +443,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 				"add" // compute address of "id" declaration
 			);
 		
-		//se la variabile Ë una funzione bisogna recuperarne l'indirizzo a offset id - 1
+		//se la variabile ÔøΩ una funzione bisogna recuperarne l'indirizzo a offset id - 1
 		if(n.entry.type instanceof ArrowTypeNode) {
 			ret = nlJoin(ret,	
 					"stm",

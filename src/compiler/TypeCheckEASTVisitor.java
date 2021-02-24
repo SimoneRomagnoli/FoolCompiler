@@ -72,12 +72,19 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 	@Override
 	public TypeNode visitNode(ClassNode n) throws TypeException {
 		if (print) printNode(n,n.id);
+		
+		// visita dei metodi
+		for (MethodNode m : n.methods) visit(m);
+		
 		if(n.superID != null) {
+			//aggiornamento di supertipe(mappa classe-superclasse)
 			TypeRels.superType.put(n.id, n.superID);
 			ClassTypeNode parentCT = (ClassTypeNode)n.superEntry.type;
 			for(FieldNode f: n.fields) {
 				int position = -f.offset-1;
+				// se entro in questo if vuole dire che sto facendo overriding
 				if(position < parentCT.allFields.size()) {
+					//controllo che il campo nella stessa posizione del padre sia sopratipo
 					if(!isSubtype(f.getType(), parentCT.allFields.get(position))) {
 						throw new TypeException("Fields must be subtype of the ones declared in superclass",n.getLine());
 					}
@@ -92,17 +99,10 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 				}
 			}
 		}
-		for (MethodNode m : n.methods) {
-			try {
-				visit(m);
-			} catch (IncomplException e) { 
-			} catch (TypeException e) {
-				System.out.println("Type checking error in a declaration: " + e.text);
-			}
-		}
 		return null;
 	}
 	
+	//identico a funNode
 	@Override
 	public TypeNode visitNode(MethodNode n) throws TypeException {
 		if (print) printNode(n,n.id);
@@ -118,6 +118,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		return null;
 	}
 	
+	// il controllo che ID1.ID2() fosse corretto, era già stato fatto nella visita della sym table. 
 	@Override
 	public TypeNode visitNode(ClassCallNode n) throws TypeException {
 		if (print) printNode(n,n.classID);
@@ -295,6 +296,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		if(n.entry.type instanceof MethodTypeNode)
 			throw new TypeException("Wrong usage of method " + n.id,n.getLine());
 		TypeNode t = visit(n.entry); 
+		// controllo che ID non sia il nome di una classe
 		if (t instanceof ClassTypeNode)
 			throw new TypeException("Wrong usage of class identifier " + n.id,n.getLine());
 		return t;

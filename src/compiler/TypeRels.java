@@ -43,18 +43,12 @@ public class TypeRels {
 		if(a instanceof EmptyTypeNode && b instanceof RefTypeNode) {
 			return true;
 		}
-		if(a instanceof RefTypeNode) {
-			if(b instanceof RefTypeNode) {
+		if(a instanceof RefTypeNode && b instanceof RefTypeNode) {
 			RefTypeNode a1 = (RefTypeNode)a;
 			RefTypeNode b1 = (RefTypeNode)b;
-			//return a1.id.equals(b1.id) || superType.containsKey(a1.id) && isSuperType(a1.id, b1.id);
-			return a1.id.equals(b1.id) || superType.containsKey(a1.id) && isSuperType(a1.id, b1.id);
-			
-			} else {
-				return false;
-			}
+			return a1.id.equals(b1.id) || superType.containsKey(a1.id) && isSuperType(a1.id, b1.id);		
 		} 			
-		if(a instanceof EmptyTypeNode && b instanceof RefTypeNode || b instanceof EmptyTypeNode) {
+		if(a instanceof EmptyTypeNode && (b instanceof RefTypeNode || b instanceof EmptyTypeNode)) {
 			return true;
 		}
 		if(a instanceof ArrowTypeNode && b instanceof ArrowTypeNode) {
@@ -66,6 +60,7 @@ public class TypeRels {
 		
 	}
 	
+	//controllo che fra i parametri ci sia una relazione di contro-varianza(li ho invertiti nella chiamata a checkparameter)
 	private static boolean checkParameters(List<TypeNode> a, List<TypeNode> b) {
 		boolean eq = true;
 		for(int i=0; i<a.size() && eq; i++) {

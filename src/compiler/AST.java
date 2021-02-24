@@ -263,6 +263,7 @@ public class AST {
 		final List<DecNode> declist;
 		final Node exp;
 		int offset;
+		// label per code generation
 		String label;
 		MethodNode(String i, TypeNode rt, List<ParNode> pl, List<DecNode> dl, Node e) {
 	    	id=i; 
