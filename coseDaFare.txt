@@ -1,0 +1,2 @@
+-Spostare la definizione del classtypeNode all'interno di astGeneration
+- Sono da settare i tipi nel classNode(della classe ereditata)  o solo nella STEntry?

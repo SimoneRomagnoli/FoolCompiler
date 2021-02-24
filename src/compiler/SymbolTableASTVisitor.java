@@ -113,13 +113,17 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		Map<String, STentry> hm = symTable.get(nestingLevel);
 		STentry entry = null;
 		n.setType(new ClassTypeNode(new ArrayList<>(), new ArrayList<>()));
+		
+		//se eredita, il tipo della classe viene creato copiando quello ereditato
 		if(n.superID != null) {
 			
+			// entry della classe ereditata
 			n.setSuperEntry(hm.get(n.superID));
-			//se eredita, il tipo della classe viene creato copiando quello ereditato
+			
 			ClassTypeNode clone = (ClassTypeNode)n.superEntry.type;
 			((ClassTypeNode)n.getType()).allFields.addAll(0, clone.allFields);
 			((ClassTypeNode)n.getType()).allMethods.addAll(0, clone.allMethods);
+			
 			entry = new STentry(nestingLevel, new ClassTypeNode(new ArrayList<>(clone.allFields), new ArrayList<>(clone.allMethods)),decOffset--);
 		} else {
 			entry = new STentry(nestingLevel, new ClassTypeNode(new ArrayList<>(), new ArrayList<>()) ,decOffset--);
@@ -158,7 +162,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 					System.out.println("Cannot override method id " + f.id + " with a field at line "+ n.getLine());
 					stErrors++;
 				} else {
-					//sostituisco nuova STentry alla vecchia preservando l’offset che era nella vecchia STentry
+					//sostituisco nuova STentry alla vecchia preservando lï¿½offset che era nella vecchia STentry
 					f.offset = virtualTable.get(f.id).offset;
 					virtualTable.put(f.id, new STentry(nestingLevel,f.getType(),f.offset));
 					((ClassTypeNode)hm.get(n.id).type).allFields.set(-f.offset-1, f.getType());
@@ -203,7 +207,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				System.out.println("Cannot override method id " + n.id + " with a field at line "+ n.getLine());
 				stErrors++;
 			} else {
-				//sostituisco nuova STentry alla vecchia preservando l’offset che era nella vecchia STentry
+				//sostituisco nuova STentry alla vecchia preservando lï¿½offset che era nella vecchia STentry
 				n.offset = virtualTable.get(n.id).offset;
 				//virtualTable.put(n.id, new STentry(nestingLevel, new MethodTypeNode(parTypes,n.retType), n.offset));
 				virtualTable.put(n.id, new STentry(nestingLevel, n.getType(), n.offset));
