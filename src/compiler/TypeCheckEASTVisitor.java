@@ -75,18 +75,18 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		if(n.superID != null) {
 			TypeRels.superType.put(n.id, n.superID);
 			ClassTypeNode parentCT = (ClassTypeNode)n.superEntry.type;
-			for(int i = 0; i<n.fields.size(); i++) {
-				int position = -n.fields.get(i).offset-1;
+			for(FieldNode f: n.fields) {
+				int position = -f.offset-1;
 				if(position < parentCT.allFields.size()) {
-					if(!isSubtype(n.fields.get(i).getType(), parentCT.allFields.get(position))) {
+					if(!isSubtype(f.getType(), parentCT.allFields.get(position))) {
 						throw new TypeException("Fields must be subtype of the ones declared in superclass",n.getLine());
 					}
 				}
 			}
-			for(int i = 0; i<n.methods.size(); i++) {
-				int position = n.methods.get(i).offset;
+			for(MethodNode m:n.methods) {
+				int position = m.offset;
 				if(position < parentCT.allMethods.size()) {
-					if(!isSubtype(n.methods.get(i).getType(), parentCT.allMethods.get(position))) {
+					if(!isSubtype(m.getType(), parentCT.allMethods.get(position))) {
 						throw new TypeException("Methods must be subtype of the ones declared in superclass",n.getLine());
 					}
 				}
@@ -113,7 +113,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 			} catch (TypeException e) {
 				System.out.println("Type checking error in a declaration: " + e.text);
 			}
-		if ( !isSubtype(visit(n.exp),ckvisit(n.retType)) ) 
+		if ( !isSubtype(visit(n.exp), ckvisit(n.retType)) ) 
 			throw new TypeException("Wrong return type for method " + n.id,n.getLine());
 		return null;
 	}
@@ -139,7 +139,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		if ( !(n.arglist.size() == n.arglist.size()) )
 			throw new TypeException("Wrong number of parameters in the creation of "+n.id,n.getLine());
 		for (int i = 0; i < n.arglist.size(); i++)
-			if ( !(isSubtype(visit(n.arglist.get(i)), ((ClassTypeNode)visit(n.entry)).allFields.get(i)) ) )
+			if ( !(isSubtype(visit(n.arglist.get(i)), ((ClassTypeNode)n.entry.type).allFields.get(i)) ) )
 				throw new TypeException("Wrong type for "+(i+1)+"-th parameter in the creation of "+n.id,n.getLine());
 		return new RefTypeNode(n.id);
 	}

@@ -37,6 +37,27 @@ push 1
 add
 shp
 lhp
+push function0
+lhp
+sw
+lhp
+push 1
+add
+shp
+push function3
+lhp
+sw
+lhp
+push 1
+add
+shp
+push function2
+lhp
+sw
+lhp
+push 1
+add
+shp
 push function4
 lhp
 sw
@@ -44,6 +65,7 @@ lhp
 push 1
 add
 shp
+lhp
 push function5
 lhp
 sw
@@ -51,7 +73,6 @@ lhp
 push 1
 add
 shp
-lhp
 push function6
 lhp
 sw
@@ -59,6 +80,7 @@ lhp
 push 1
 add
 shp
+lhp
 push function7
 lhp
 sw
@@ -66,15 +88,22 @@ lhp
 push 1
 add
 shp
-lhp
-push function6
+push function8
 lhp
 sw
 lhp
 push 1
 add
 shp
-push function8
+lhp
+push function7
+lhp
+sw
+lhp
+push 1
+add
+shp
+push function9
 lhp
 sw
 lhp
@@ -98,7 +127,7 @@ push 1
 add
 shp
 lfp
-push -7
+push -8
 add
 lw
 lhp
@@ -107,7 +136,7 @@ lhp
 push 1
 add
 shp
-push 9994
+push 9993
 lw
 lhp
 sw
@@ -141,51 +170,64 @@ add
 shp
 lfp
 lfp
-push -9
-add
-lw
-lfp
-push -8
-add
-lw
-stm
-ltm
-ltm
-lw
-push 1
-add
-lw
-js
-lfp
 push -10
 add
 lw
-push -1
-beq label10
-push 0
-b label11
-label10:
-push 1
-label11:
-push 1
-beq label8
 lfp
-lfp
-push -7
+push -9
 add
 lw
 stm
 ltm
 ltm
 lw
-push 0
+push 1
 add
 lw
 js
-b label9
-label8:
-push 0
-label9:
+push 2
+push 2
+push 2
+lhp
+sw
+lhp
+push 1
+add
+shp
+lhp
+sw
+lhp
+push 1
+add
+shp
+lhp
+sw
+lhp
+push 1
+add
+shp
+push 9996
+lw
+lhp
+sw
+lhp
+lhp
+push 1
+add
+shp
+lfp
+lfp
+push -12
+add
+lw
+stm
+ltm
+ltm
+lw
+push 1
+add
+lw
+js
 print
 halt
 
@@ -250,7 +292,7 @@ cfp
 lra
 lfp
 lw
-push -1
+push -3
 add
 lw
 stm
@@ -262,6 +304,22 @@ lra
 js
 
 function5:
+cfp
+lra
+lfp
+lw
+push -1
+add
+lw
+stm
+sra
+pop
+sfp
+ltm
+lra
+js
+
+function6:
 cfp
 lra
 lfp
@@ -297,7 +355,7 @@ ltm
 lra
 js
 
-function6:
+function7:
 cfp
 lra
 lfp
@@ -313,7 +371,7 @@ ltm
 lra
 js
 
-function7:
+function8:
 cfp
 lra
 push 5
@@ -376,7 +434,7 @@ lhp
 push 1
 add
 shp
-push 9996
+push 9995
 lw
 lhp
 sw
@@ -395,7 +453,7 @@ ltm
 lra
 js
 
-function8:
+function9:
 cfp
 lra
 lfp
@@ -437,7 +495,7 @@ lhp
 push 1
 add
 shp
-push 9996
+push 9995
 lw
 lhp
 sw

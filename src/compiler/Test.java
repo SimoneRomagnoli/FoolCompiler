@@ -13,8 +13,9 @@ public class Test {
    			
     	//String fileName = "quicksort_ho.fool";
     	//String fileName = "simple.fool";
-    	//String fileName = "bankloan.fool";
-    	String fileName = "animals.fool";
+    	String fileName = "bankloan.fool";
+    	//String fileName = "animals.fool";
+    	//String fileName = "cars.fool";
 
     	CharStream chars = CharStreams.fromFileName(fileName);
     	FOOLLexer lexer = new FOOLLexer(chars);

@@ -112,7 +112,6 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		//visito la classe dichiarata
 		Map<String, STentry> hm = symTable.get(nestingLevel);
 		STentry entry = null;
-		n.setType(new ClassTypeNode(new ArrayList<>(), new ArrayList<>()));
 		
 		//se eredita, il tipo della classe viene creato copiando quello ereditato
 		if(n.superID != null) {
@@ -127,8 +126,6 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			}
 
 			ClassTypeNode clone = (ClassTypeNode)n.superEntry.type;
-			//((ClassTypeNode)n.getType()).allFields.addAll(0, clone.allFields);
-			//((ClassTypeNode)n.getType()).allMethods.addAll(0, clone.allMethods);
 			entry = new STentry(nestingLevel, new ClassTypeNode(clone), decOffset--);
 		} else {
 			entry = new STentry(nestingLevel, new ClassTypeNode(new ArrayList<>(), new ArrayList<>()) ,decOffset--);
@@ -191,7 +188,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				optimizer.add(m.id);
 			}
 			visit(m);
-			//se l'offset � minore della lunghezza di allMethods vuol dire che ho visitato un metodo gi� dichiarato
+			//se l'offset e' minore della lunghezza di allMethods vuol dire che ho visitato un metodo gi� dichiarato
 			//quindi sto facendo overriding
 			if(m.offset < ((ClassTypeNode)entry.type).allMethods.size()) {
 				((ClassTypeNode)entry.type).allMethods.set(m.offset, (MethodTypeNode) m.getType());
@@ -199,6 +196,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				((ClassTypeNode)entry.type).allMethods.add( (MethodTypeNode) m.getType());
 			}
 		}
+		
+		n.setType(new ClassTypeNode((ClassTypeNode)entry.type));
 		
 		//rimuovere la hashmap corrente poiche' esco dallo scope               
 		symTable.remove(nestingLevel--);

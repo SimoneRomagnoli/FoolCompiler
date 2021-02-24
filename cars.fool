@@ -1,0 +1,21 @@
+let
+
+  class Car (wheels:int) {
+    fun getWheels:int() wheels;
+  }
+  
+  class Truck extends Car () {
+    fun getWheels:int() wheels+2;
+    fun tooHeavy:bool() false;
+  }
+  
+  class SuperTruck extends Truck () {
+    fun tooHeavy:bool() true;
+    fun getWheels:int() wheels+4;
+  }
+  
+  var antonio:Car = new Truck(4);
+  var bruh:Car = new SuperTruck(4);      
+        
+in
+  print(antonio.tooHeavy());

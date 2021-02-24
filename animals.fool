@@ -36,8 +36,8 @@ let
   var saf:Safari = new ExtremeSafari(hippo);
   var parrot:FlyingAnimal = new FlyingAnimal(2,2);
   var photo:Photo = saf.photoWith(parrot);
-  var struzzo:Animal = new RidingAnimal(2,2,2);
+  var struzzo:Animal = new FlyingAnimal(2,2);
       
 in
-
- print(struzzo.getRedini());
+  /*print(if (photo==null) then {0} else {hippo.getPaws()});*/
+  print(struzzo.getWings());
