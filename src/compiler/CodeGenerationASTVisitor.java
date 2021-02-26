@@ -97,7 +97,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		
 		for(MethodNode m:n.methods) {
 			visit(m);
-			
+				//caso in cui non faccio override
 			if(m.offset >= dispatchTables.get(dispatchTables.size()-1).size()) {
 				dispatchTables.get(dispatchTables.size()-1).add(m.label);
 			} else {	
@@ -133,7 +133,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 	@Override
 	public String visitNode(EmptyNode n) {
 		if (print) printNode(n);
-		//-1 è diverso da qualsiasi object pointer
+		//-1 e' diverso da qualsiasi object pointer
 		return "push -1";
 	}
 	
@@ -177,7 +177,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		return nlJoin(
 			"lfp", 			// carico il control link sullo stack
 			argCode, 		// carico codice per gli argomenti (al contrario)
-			"lfp", 			// recupero il valore dell'AR dove è dichiarata la classe
+			"lfp", 			// recupero il valore dell'AR dove e' dichiarata la classe
 			getAR, 			// con risalita della catena statica
 			
 			"push "+n.entry.offset,
@@ -185,14 +185,14 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 			"lw",			//carico l'object pointer sullo stack (setto l'access link)
 			
 			"stm",
-			"ltm",			//duplico il valore
+			"ltm",			//duplico il valore in tm
 			
 			"ltm",
 			"lw",			//seguo l'access link (va al dispatch pointer)
 			
 			"push "+n.methodEntry.offset,
 			"add",			//calcolo l'indirizzo del corpo del metodo
-			"lw",			//va all'indirizzp
+			"lw",			//va all'indirizzo
 			"js"			//jump al metodo
 		);
 	}
@@ -401,12 +401,11 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		for (int i=n.arglist.size()-1;i>=0;i--) argCode=nlJoin(argCode,visit(n.arglist.get(i)));
 		for (int i = 0;i<n.nl-n.entry.nl;i++) getAR=nlJoin(getAR,"lw");
 		return nlJoin(
-			"lfp", 			// load Control Link (pointer to frame of function "id" caller)
-			argCode, 		// generate code for argument expressions in reversed order
-			"lfp", 			//load object ar (if method) or first ring of the chain (if function)
-			getAR, 			// retrieve address of frame containing "id" declaration
-							// by following the static chain (of Access Links)
-							// se è una chiamata a metodo  allora getAR = "lw" poichè
+			"lfp", 			// carico il control link sullo stack
+			argCode, 		// carico codice per gli argomenti (al contrario)
+			"lfp", 			// recupero il valore dell'AR dove e' dichiarata la classe
+			getAR, 			// con risalita della catena statica
+							// se e' una chiamata a metodo  allora getAR = "lw" poiche'
 			    			// siamo per forza all'interno della classe stessa
 			
 			n.entry.type instanceof MethodTypeNode 
@@ -423,19 +422,30 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 						"lw",			//va all'indirizzo
 						"js"			//jump al metodo
 						)
-				//se la chiamata non è a un metodo, resta invariato
+				//se la chiamata non e' a un metodo, resta invariato
 				: nlJoin(
-						"push "+n.entry.offset, 
-						"add",
+//						"push "+n.entry.offset, 
+//						"add",
+//						
+//						"stm", 			
+//						"ltm", 			
+//						"lw",
+//						"ltm", 			
+//						"push 1", 
+//						"sub", 			
+//						"lw", 			// load address of "id" function
+//						"js"  			// jump to popped address (saving address of subsequent instruction in $ra)
+						"stm",
+			            "ltm",
+			            "push " + n.entry.offset , 
+			            "add", 			// Calcoliamo l'indirizzo AR della dichiarazione della funzione
+						"lw", 			// Settiamo l'Access Link
 						
-						"stm", 			
-						"ltm", 			
-						"lw",
-						"ltm", 			
-						"push 1", 
-						"sub", 			
-						"lw", 			// load address of "id" function
-						"js"  			// jump to popped address (saving address of subsequent instruction in $ra)
+						"ltm",
+						"push " + (n.entry.offset-1), 
+						"add",			// Risaliamo all'indirizzo del corpo della funzione (label)
+						"lw", 			
+			            "js"  			// Saltiamo al corpo della funzione
 						)
 			);
 	}
@@ -446,11 +456,11 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		String getAR = null;
 		for (int i = 0;i<n.nl-n.entry.nl;i++) getAR=nlJoin(getAR,"lw");
 		String ret = nlJoin(
-				"lfp", 
-				getAR,  // retrieve address of frame containing "id" declaration
-	              		// by following the static chain (of Access Links)
-				"push "+n.entry.offset, 
-				"add" // compute address of "id" declaration
+				"lfp",  // mette il valore di fp in cima allo stack
+				getAR,  // raggiunge l'indirizzo del frame contentente la dichiarazione
+				        // dell'id seguendo la catena statica degli access links
+				"push "+n.entry.offset,   // pusha sullo stack l'offset
+				"add"
 			);
 		
 		//se la variabile e' una funzione bisogna recuperarne l'indirizzo a offset id - 1
