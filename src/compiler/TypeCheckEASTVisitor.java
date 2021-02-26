@@ -79,10 +79,11 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		if(n.superID != null) {
 			//aggiornamento di supertipe(mappa classe-superclasse)
 			TypeRels.superType.put(n.id, n.superID);
+			// ClassTypeNode della superclasse
 			ClassTypeNode parentCT = (ClassTypeNode)n.superEntry.type;
 			for(FieldNode f: n.fields) {
 				int position = -f.offset-1;
-				// se entro in questo if vuole dire che sto facendo overriding
+				// se la posizione del campo e' minore della dimensione di allFields sto facendo overriding
 				if(position < parentCT.allFields.size()) {
 					//controllo che il campo nella stessa posizione del padre sia sopratipo
 					if(!isSubtype(f.getType(), parentCT.allFields.get(position))) {
@@ -92,7 +93,9 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 			}
 			for(MethodNode m:n.methods) {
 				int position = m.offset;
+				// se la posizione del metodo e' minore della dimensione di allMethods sto facendo overriding
 				if(position < parentCT.allMethods.size()) {
+					//controllo che il metodo nella stessa posizione del padre sia sopratipo
 					if(!isSubtype(m.getType(), parentCT.allMethods.get(position))) {
 						throw new TypeException("Methods must be subtype of the ones declared in superclass",n.getLine());
 					}

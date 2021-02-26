@@ -106,7 +106,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			System.out.println("Class id " + n.id + " at line "+ n.getLine() +" declared out of global env");
 			stErrors++;
 		}
-		
+		// serve per rilevare la ridefinizione erronea di campi o metodi all'interno 
+		// della stessa classe
 		this.optimizer = new HashSet<>();
 		
 		//visito la classe dichiarata
@@ -149,11 +150,13 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		nestingLevel++;
 		symTable.add(virtualTable);
 		
-		int prevNLDecOffset=decOffset; // stores counter for offset of declarations at previous nesting level 
+		int prevNLDecOffset=decOffset; // mantiene il contatore dell'offset delle dichiarazioni al precedente nesting level 
 		decOffset=n.superID!=null ? ((ClassTypeNode)entry.type).allMethods.size() : 0;
 		int fieldsOffset= n.superID!=null ? -((ClassTypeNode)entry.type).allFields.size()-1 : -1;
 		
 		for (FieldNode f : n.fields) {
+			// gestione ottimizzata della ridefinizione di un campo nella stessa classe
+			// da' errore.
 			if(optimizer.contains(f.id)) {
 				System.out.println("Field id " + f.id + " already declared in class "+n.id);
 				stErrors++;
@@ -161,14 +164,14 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				optimizer.add(f.id);
 			}
 			if(virtualTable.containsKey(f.id)) {
-				//se la virtual table contiene gi� un campo con quel nome vuol dire che:
+				//se la virtual table contiene gia' un campo con quel nome vuol dire che:
 				// 1. sto ereditando
 				// 2. sto facendo overriding
 				if(virtualTable.get(f.id).type instanceof MethodTypeNode) {
 					System.out.println("Cannot override method id " + f.id + " with a field at line "+ n.getLine());
 					stErrors++;
 				} else {
-					//sostituisco nuova STentry alla vecchia preservando l�offset che era nella vecchia STentry
+					//sostituisco nuova STentry alla vecchia preservando l'offset che era nella vecchia STentry
 					f.offset = virtualTable.get(f.id).offset;
 					virtualTable.put(f.id, new STentry(nestingLevel,f.getType(),f.offset));
 					((ClassTypeNode)entry.type).allFields.set(-f.offset-1, f.getType());
@@ -181,6 +184,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		}
 		
 		for (MethodNode m: n.methods) {
+			// gestione ottimizzata della ridefinizione di un metodo nella stessa classe
+			// da' errore.
 			if(optimizer.contains(m.id)) {
 				System.out.println("Method id " + m.id + " already declared in class "+n.id);
 				stErrors++;
