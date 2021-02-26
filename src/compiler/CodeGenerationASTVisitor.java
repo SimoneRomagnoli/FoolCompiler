@@ -225,7 +225,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 				
 				"lhp",			//copio object pointer sullo stack (valore di ritorno)
 				
-				"lhp",
+				"lhp",         // copia $hp sullo stack
 				"push 1",
 				"add",
 				"shp"			//incremento $hp
