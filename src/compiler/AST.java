@@ -41,6 +41,7 @@ public class AST {
 	    	exp=e;
 	    }
 		
+		// utilizzato per settare il tipo nella visita della symbol table
 		void setType(ArrowTypeNode t) {type = t;}
 		
 		@Override

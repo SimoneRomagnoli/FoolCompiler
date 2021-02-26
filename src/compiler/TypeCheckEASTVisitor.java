@@ -167,8 +167,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 			throw new TypeException("Non boolean condition in if",n.getLine());
 		TypeNode t = visit(n.th);
 		TypeNode e = visit(n.el);
-		//if (isSubtype(t, e)) return e;
-		//if (isSubtype(e, t)) return t;
+		// il lowestCommonAncestor fa parte delle ottimizzazioni
 		TypeNode ref = TypeRels.lowestCommonAncestor(t, e);
 		if(ref == null ) {			
 			throw new TypeException("Incompatible types in then-else branches",n.getLine());
@@ -296,7 +295,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 	@Override
 	public TypeNode visitNode(IdNode n) throws TypeException {
 		if (print) printNode(n,n.id);
-		if(n.entry.type instanceof MethodTypeNode)
+		if (n.entry.type instanceof MethodTypeNode)
 			throw new TypeException("Wrong usage of method " + n.id,n.getLine());
 		TypeNode t = visit(n.entry); 
 		// controllo che ID non sia il nome di una classe

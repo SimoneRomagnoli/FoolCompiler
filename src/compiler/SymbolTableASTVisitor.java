@@ -53,6 +53,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		for (ParNode par : n.parlist) parTypes.add(par.getType()); 
 		n.setType(new ArrowTypeNode(parTypes, n.retType));
 		
+		// decremento due volte l'offset poiche' nell'AR i tipi funzionali occupano offset doppio
 		STentry entry = new STentry(nestingLevel, new ArrowTypeNode(parTypes,n.retType),decOffset--);
 		decOffset--;
 		
@@ -70,6 +71,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		
 		int parOffset=1;
 		for (ParNode par : n.parlist) {
+			// Devo tenere conto dello spazio che verra' occupato dall'indirizzo del corpo della funzione, 
+			// quindi devo inserire un offset pre-incrementato per i parametri.
 			if(par.getType() instanceof ArrowTypeNode) parOffset++;
 			if (hmn.put(par.id, new STentry(nestingLevel,par.getType(),parOffset++)) != null) {
 				System.out.println("Par id " + par.id + " at line "+ n.getLine() +" already declared");
@@ -78,7 +81,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		}
 		for (Node dec : n.declist) visit(dec);
 		visit(n.exp);
-		//rimuovere la hashmap corrente poiche' esco dallo scope               
+		//rimuovo la hashmap corrente poiche' esco dallo scope               
 		symTable.remove(nestingLevel--);
 		decOffset=prevNLDecOffset; // restores counter for offset of declarations at previous nesting level 
 		return null;

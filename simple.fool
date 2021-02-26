@@ -2,7 +2,7 @@ let
 
   class Pair (x:int, y:int) {
     fun first:int() x;
-    fun second:int() y;
+    fun second:int() first+y;
   }
   
   fun couple:Pair(i:int, j:int) 

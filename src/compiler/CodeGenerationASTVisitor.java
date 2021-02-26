@@ -47,12 +47,16 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		for (Node dec : n.declist) {
 			declCode = nlJoin(declCode,visit(dec));
 			popDecl = nlJoin(popDecl,"pop");
+			// se fra le dichiarazioni ho un ArrowTypeNode devo deallocare 
+			// 2 cose dallo stack, e quindi faccio una pop in piu`
 			if( ((DecNode)dec).getType() instanceof ArrowTypeNode) {
 				popDecl = nlJoin(popDecl,"pop");
 			}
 		}
 		for (int i=0;i<n.parlist.size();i++) {
 			popParl = nlJoin(popParl,"pop");
+			// se fra i parametri ho un ArrowTypeNode devo deallocare 
+			// 2 cose dallo stack, e quindi faccio una pop in piu`
 			if(n.parlist.get(i).getType() instanceof ArrowTypeNode) {
 				popParl = nlJoin(popParl,"pop");
 			}
@@ -76,7 +80,10 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 				"js"  			// jump to to popped address
 			)
 		);
-		return nlJoin("lfp", "push "+funl);		
+		return nlJoin(
+				"lfp",   		// puntatore all'AR della dichiarazione della funzione
+				"push "+funl    // label della funzione
+				);		
 	}
 
 	@Override
@@ -448,24 +455,24 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		String getAR = null;
 		for (int i = 0;i<n.nl-n.entry.nl;i++) getAR=nlJoin(getAR,"lw");
 		String ret = nlJoin(
-				"lfp",  // mette il valore di fp in cima allo stack
-				getAR,  // raggiunge l'indirizzo del frame contentente la dichiarazione
-				        // dell'id seguendo la catena statica degli access links
-				"push "+n.entry.offset,   // pusha sullo stack l'offset
-				"add"	// calcolo l'indirizzo di dichiarazione dell'id
+				"lfp", 					 // mette il valore di fp in cima allo stack
+				getAR,  				 // raggiunge l'indirizzo del frame contentente la dichiarazione
+										 // dell'id seguendo la catena statica degli access links
+				"push "+n.entry.offset,  // pusha sullo stack l'offset
+				"add"					 // calcolo l'indirizzo di dichiarazione dell'id
 			);
 		
 		//se la variabile e' una funzione bisogna recuperarne l'indirizzo a offset id - 1
 		if(n.entry.type instanceof ArrowTypeNode) {
 			ret = nlJoin(ret,	
 					"stm",		
-					"ltm",		//copio in $tm l'indirizzo di id
+					"ltm",				//copio in $tm l'indirizzo della funzione
 					
-					"lw",		//carico il puntatore all'AR
+					"lw",				//carico il puntatore all'AR
 					
-					"ltm",      //riprendo il valore copiato in $tm (offset)
+					"ltm",      		//riprendo il valore copiato in $tm (offset)
 					"push 1",   
-					"sub"       //sottraggo 1 per raggiungere il corpo della funzione con lw
+					"sub"      			//sottraggo 1 per raggiungere il corpo della funzione con lw
 					);
 		} 
 		return nlJoin(ret, "lw");

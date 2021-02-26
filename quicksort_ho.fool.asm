@@ -176,25 +176,25 @@ push -15
 add
 lw
 lfp
-stm
-ltm
 push -9
 add
+stm
+ltm
 lw
 ltm
-push -10
-add
+push 1
+sub
 lw
 js
 lfp
-stm
-ltm
 push -3
 add
+stm
+ltm
 lw
 ltm
-push -4
-add
+push 1
+sub
 lw
 js
 halt
@@ -322,25 +322,25 @@ lw
 js
 lfp
 lw
-stm
-ltm
 push -3
 add
+stm
+ltm
 lw
 ltm
-push -4
-add
+push 1
+sub
 lw
 js
 lfp
-stm
-ltm
 push -2
 add
+stm
+ltm
 lw
 ltm
-push -3
-add
+push 1
+sub
 lw
 js
 b label1
@@ -407,14 +407,14 @@ lw
 js
 lfp
 lw
-stm
-ltm
 push -5
 add
+stm
+ltm
 lw
 ltm
-push -6
-add
+push 1
+sub
 lw
 js
 lhp
@@ -486,14 +486,14 @@ add
 lw
 js
 lfp
-stm
-ltm
 push 3
 add
+stm
+ltm
 lw
 ltm
-push 2
-add
+push 1
+sub
 lw
 js
 push 1
@@ -524,14 +524,14 @@ lw
 js
 lfp
 lw
-stm
-ltm
 push -7
 add
+stm
+ltm
 lw
 ltm
-push -8
-add
+push 1
+sub
 lw
 js
 b label13
@@ -575,14 +575,14 @@ lw
 js
 lfp
 lw
-stm
-ltm
 push -7
 add
+stm
+ltm
 lw
 ltm
-push -8
-add
+push 1
+sub
 lw
 js
 lhp
@@ -637,14 +637,14 @@ add
 lw
 lfp
 lw
-stm
-ltm
 push 3
 add
+stm
+ltm
 lw
 ltm
-push 2
-add
+push 1
+sub
 lw
 js
 stm
@@ -671,14 +671,14 @@ add
 lw
 lfp
 lw
-stm
-ltm
 push 3
 add
+stm
+ltm
 lw
 ltm
-push 2
-add
+push 1
+sub
 lw
 js
 push -1
@@ -786,26 +786,26 @@ lw
 js
 lfp
 lw
-stm
-ltm
 push -7
 add
+stm
+ltm
 lw
 ltm
-push -8
-add
+push 1
+sub
 lw
 js
 lfp
 lw
-stm
-ltm
 push -9
 add
+stm
+ltm
 lw
 ltm
-push -10
-add
+push 1
+sub
 lw
 js
 lhp
@@ -866,38 +866,38 @@ lw
 js
 lfp
 lw
-stm
-ltm
 push -7
 add
+stm
+ltm
 lw
 ltm
-push -8
-add
+push 1
+sub
 lw
 js
 lfp
 lw
-stm
-ltm
 push -9
 add
+stm
+ltm
 lw
 ltm
-push -10
-add
+push 1
+sub
 lw
 js
 lfp
 lw
-stm
-ltm
 push -5
 add
+stm
+ltm
 lw
 ltm
-push -6
-add
+push 1
+sub
 lw
 js
 b label19
