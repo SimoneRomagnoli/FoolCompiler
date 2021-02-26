@@ -420,32 +420,24 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 						"push "+n.entry.offset,
 						"add",			//calcolo l'indirizzo del corpo del metodo
 						"lw",			//va all'indirizzo
-						"js"			//jump al metodo
+						"js"			//salto al metodo
 						)
 				//se la chiamata non e' a un metodo, resta invariato
 				: nlJoin(
-//						"push "+n.entry.offset, 
-//						"add",
-//						
-//						"stm", 			
-//						"ltm", 			
-//						"lw",
-//						"ltm", 			
-//						"push 1", 
-//						"sub", 			
-//						"lw", 			// load address of "id" function
-//						"js"  			// jump to popped address (saving address of subsequent instruction in $ra)
-						"stm",
-			            "ltm",
-			            "push " + n.entry.offset , 
-			            "add", 			// Calcoliamo l'indirizzo AR della dichiarazione della funzione
-						"lw", 			// Settiamo l'Access Link
+						"push "+n.entry.offset, 	
+						"add",			//calcolo l'indirizzo di dichiarazione della funzione
 						
-						"ltm",
-						"push " + (n.entry.offset-1), 
-						"add",			// Risaliamo all'indirizzo del corpo della funzione (label)
-						"lw", 			
-			            "js"  			// Saltiamo al corpo della funzione
+						"stm", 			
+						"ltm",			//copio in $tm l'indirizzo di dichiarazione della funzione 			
+						
+						"lw",			//seguo l'access link
+						
+						"ltm",			//riprendo l'indirizzo di dichiarazione della funzione 			
+						"push 1", 
+						"sub", 			//sottraggo 1 per raggiungere il corpo della funzinoe
+						
+						"lw", 			// carico l'indirizzo del corpo della funzione (label)
+						"js"  			// salto al corpo della funzione
 						)
 			);
 	}
@@ -460,17 +452,17 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 				getAR,  // raggiunge l'indirizzo del frame contentente la dichiarazione
 				        // dell'id seguendo la catena statica degli access links
 				"push "+n.entry.offset,   // pusha sullo stack l'offset
-				"add"
+				"add"	// calcolo l'indirizzo di dichiarazione dell'id
 			);
 		
 		//se la variabile e' una funzione bisogna recuperarne l'indirizzo a offset id - 1
 		if(n.entry.type instanceof ArrowTypeNode) {
 			ret = nlJoin(ret,	
-					//copio in $tm la cima dello stack
-					"stm",
-					"ltm",
+					"stm",		
+					"ltm",		//copio in $tm l'indirizzo di id
 					
-					"lw",		//carico il puntatore all'AR di base
+					"lw",		//carico il puntatore all'AR
+					
 					"ltm",      //riprendo il valore copiato in $tm (offset)
 					"push 1",   
 					"sub"       //sottraggo 1 per raggiungere il corpo della funzione con lw
