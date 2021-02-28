@@ -7,6 +7,12 @@ let
   
   fun couple:Pair(i:int, j:int) 
     new Pair(i,j);
+    
+    
+    first:bool(x:int, y:bool)
+    second:bool(x:bool, y:int)
+    
+    lwa:bool(x:bool, y:bool)
   
   var p:Pair = couple(1,2);
   
