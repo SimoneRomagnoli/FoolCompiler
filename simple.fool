@@ -1,20 +1,12 @@
 let
-
-  class Pair (x:int, y:int) {
-    fun first:int() x;
-    fun second:int() first+y;
-  }
-  
-  fun couple:Pair(i:int, j:int) 
-    new Pair(i,j);
-    
-    
-    first:bool(x:int, y:bool)
-    second:bool(x:bool, y:int)
-    
-    lwa:bool(x:bool, y:bool)
-  
-  var p:Pair = couple(1,2);
-  
+	class Animal(f:bool) {
+		fun canFly:bool() f;
+	}
+	
+	var hippo:Animal = new Animal(false);
+	var chicken:Animal = new Animal(true);
 in
-  print(p.second());
+
+	if(!false)
+	then {print(hippo.canFly())}
+	else {print(chicken.canFly())};

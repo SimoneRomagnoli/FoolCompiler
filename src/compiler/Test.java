@@ -12,9 +12,9 @@ public class Test {
     public static void main(String[] args) throws Exception {
    			
 //    	String fileName = "quicksort_ho.fool";
-//    	String fileName = "simple.fool";
-    	String fileName = "bankloan.fool";
-//    	String fileName = "animals.fool";
+    	String fileName = "simple.fool";
+    	//String fileName = "bankloan.fool";
+     	//String fileName = "animals.fool";
     	//String fileName = "cars.fool";
 
     	CharStream chars = CharStreams.fromFileName(fileName);

@@ -146,7 +146,9 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 		if (print) printVarAndProdName(c);
 		List<ParNode> parList = new ArrayList<>();
 		List<TypeNode> typeList = new ArrayList<>();
+		//il contatore parte da 1 perche' l'indice 0 corrisponde al nome della funzione
 		for (int i = 1; i < c.ID().size(); i++) { 
+			//c.hotype() e' una lista che contiene gli hotype dei parametri quindi il "suo" contatore parte da 0 
 			ParNode p = new ParNode(c.ID(i).getText(),(TypeNode) visit(c.hotype(i-1)));
 			p.setLine(c.ID(i).getSymbol().getLine());
 			parList.add(p);

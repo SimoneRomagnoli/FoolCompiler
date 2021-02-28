@@ -401,6 +401,9 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		);	
 	}
 
+	// funzione();
+	
+	
 	@Override
 	public String visitNode(CallNode n) {
 		if (print) printNode(n,n.id);
@@ -441,7 +444,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 						
 						"ltm",			//riprendo l'indirizzo di dichiarazione della funzione 			
 						"push 1", 
-						"sub", 			//sottraggo 1 per raggiungere il corpo della funzinoe
+						"sub", 			//sottraggo 1 per raggiungere il corpo della funzione
 						
 						"lw", 			// carico l'indirizzo del corpo della funzione (label)
 						"js"  			// salto al corpo della funzione

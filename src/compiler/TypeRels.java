@@ -11,7 +11,7 @@ public class TypeRels {
 	
 	static Map<String,String> superType;
 	
-	//Ritorna il TypeNode che Ã¨ supertipo comune tra "a" e "b", che sono i tipi delle espressioni in if-then-else.
+	//Ritorna il TypeNode che e' supertipo comune tra "a" e "b", che sono i tipi delle espressioni in if-then-else.
 	public static TypeNode lowestCommonAncestor(TypeNode a, TypeNode b) {
 		if(a instanceof RefTypeNode || a instanceof EmptyTypeNode && b instanceof RefTypeNode || b instanceof EmptyTypeNode) {
 			// se uno tra a e b e'un EmptyTypeNode torna l'altro
@@ -34,42 +34,30 @@ public class TypeRels {
 		}
 		
 		if(a instanceof ArrowTypeNode && b instanceof ArrowTypeNode && ((ArrowTypeNode)a).parlist.size() == ((ArrowTypeNode)b).parlist.size()) {
-
-//			----------- QUESTO ERA IL NOSTRO CODICE ------------
+			ArrowTypeNode a1 = (ArrowTypeNode) a;
+			ArrowTypeNode b1 = (ArrowTypeNode) b;
 			
-//			ArrowTypeNode a1 = (ArrowTypeNode)a;
-//			ArrowTypeNode b1 = (ArrowTypeNode)b;
-//			// ottengo il primo tipo antenato comune fra i 2 tipi di ritorno
-//			TypeNode lowComAnc = lowestCommonAncestor(a1.ret, b1.ret);
-//			if(lowComAnc != null && checkParameters(b1.parlist, a1.parlist)) {
-//				// passo come parlist quella di b1, poiche' ho verificato che esista
-//				// una relazione di contro-varianza fra a e b. (quelli di b1 sono per forza
-//				// sottotipo di a1)
-//				return new ArrowTypeNode(b1.parlist, lowComAnc);
-//			}
-			ArrowTypeNode firstFun = (ArrowTypeNode) a;
-			ArrowTypeNode secondFun = (ArrowTypeNode) b;
+			// lowestCommonAncestor per il tipo di ritorno (covarianza)
+			TypeNode lca = lowestCommonAncestor(a1.ret, b1.ret);
 			
-			TypeNode retType = lowestCommonAncestor(firstFun.ret, secondFun.ret); // lowestCommonAncestor per il tipo di ritorno
-			if (retType == null) {
-				return null;
-			}
-			
-			// Il tipo dell'i-esimo paramentro del LowestComonAncestor e' il tipo che e' sottotipo dell'altro
-			// relazione di contro-varianza
-			ArrowTypeNode ancestor = new ArrowTypeNode(new ArrayList<>(), retType);
-			for (int i = 0; i < firstFun.parlist.size(); i++) {
-				if (isSubtype(firstFun.parlist.get(i), secondFun.parlist.get(i))) {
-					ancestor.parlist.add(firstFun.parlist.get(i));
-				} else if (isSubtype(secondFun.parlist.get(i), firstFun.parlist.get(i))) {
-					ancestor.parlist.add(secondFun.parlist.get(i));
-				} else {
-					return null;
+			//il tipo dell'i-esimo paramentro del LowestComonAncestor e' il tipo che e' sottotipo dell'altro (controvarianza)
+			List<TypeNode> subTypes = new ArrayList<>();
+			for(int i = 0; i < a1.parlist.size(); i++) {
+				if (isSubtype(a1.parlist.get(i), b1.parlist.get(i))) {
+					subTypes.add(a1.parlist.get(i));
+				} else if (isSubtype(b1.parlist.get(i), a1.parlist.get(i))) {
+					subTypes.add(b1.parlist.get(i));
 				}
 			}
-			return ancestor;
 			
-			
+			//se i controlli sono andati bene allora ritorna un tipo funzionale che ha come tipo di ritorno il risultato della
+			//chiamata ricorsiva (covarianza) e come tipo di parametro i-esimo il
+			//tipo che è sottotipo dell'altro (controvarianza)
+			if(lca != null && subTypes.size() == a1.parlist.size()) {
+				return new ArrowTypeNode(subTypes, lca);
+			} else {
+				return null;
+			}
 		}
 		return null;
 	}

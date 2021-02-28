@@ -336,6 +336,7 @@ public class AST {
 			allMethods = m;
 		}
 		
+		//comodo per copiare direttamente il ClassTypeNode della classe ereditata 
 		ClassTypeNode(ClassTypeNode c) {
 			allFields = new ArrayList<>(c.allFields);
 			allMethods = new ArrayList<>(c.allMethods);

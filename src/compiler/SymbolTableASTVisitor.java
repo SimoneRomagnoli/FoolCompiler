@@ -167,9 +167,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				optimizer.add(f.id);
 			}
 			if(virtualTable.containsKey(f.id)) {
-				//se la virtual table contiene gia' un campo con quel nome vuol dire che:
-				// 1. sto ereditando
-				// 2. sto facendo overriding
+				//se la virtual table contiene gia' un campo con quel nome vuol dire che
+				//sto ereditandoe  sto facendo overriding
 				if(virtualTable.get(f.id).type instanceof MethodTypeNode) {
 					System.out.println("Cannot override method id " + f.id + " with a field at line "+ n.getLine());
 					stErrors++;
@@ -221,9 +220,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		for (ParNode par : n.parlist) parTypes.add(par.getType()); 
 		
 		if(virtualTable.containsKey(n.id)) {
-			//se la virtual table contiene gi� un metodo con quel nome vuol dire che:
-			// 1. sto ereditando
-			// 2. sto facendo overriding
+			//se la virtual table contiene gia' un metodo con quel nome vuol dire che
+			//sto ereditando e sto facendo overriding
 			if(!(virtualTable.get(n.id).type instanceof MethodTypeNode)) {
 				System.out.println("Cannot override method id " + n.id + " with a field at line "+ n.getLine());
 				stErrors++;
