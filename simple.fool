@@ -4,14 +4,14 @@ let
 		then {20}
 		else {20+243};
 		
-	fun getPressure:int(pascal:bool)
-		if(pascal)
-		then {10}
-		else {3};
+	fun isHot:bool(degrees:int)
+		if(degrees>=25)
+		then {true}
+		else {false};
 	
-	fun main:int(std:bool, property:(bool)->int)
+	fun main:int(std:bool, temp:(bool)->int, hot:(int)->bool)
 		if(std)
-		then {property(std)}
-		else {property(!std)};
+		then {temp(std)}
+		else {hot(26)};
 in
-	print(main(true, getTemperature));
+	print(main(true, getTemperature, isHot));

@@ -11,8 +11,8 @@ import java.nio.file.*;
 public class Test {
     public static void main(String[] args) throws Exception {
    			
-    	//String fileName = "quicksort_ho.fool";
-    	String fileName = "simple.fool";
+    	String fileName = "quicksort_ho.fool";
+    	//String fileName = "simple.fool";
     	//String fileName = "bankloan.fool";
      	//String fileName = "animals.fool";
      	//String fileName = "animals2.fool";

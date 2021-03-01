@@ -172,7 +172,8 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		if(ref == null ) {			
 			throw new TypeException("Incompatible types in then-else branches",n.getLine());
 		} else {
-			return ref;
+			return ref instanceof ArrowTypeNode ? ((ArrowTypeNode)ref).ret : ref;
+			//return ref;
 		}
 	}
 
