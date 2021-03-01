@@ -1,12 +1,17 @@
 let
-	class Animal(f:bool) {
-		fun canFly:bool() f;
-	}
+	fun getTemperature:int(celsius:bool)
+		if(celsius)
+		then {20}
+		else {20+243};
+		
+	fun getPressure:int(pascal:bool)
+		if(pascal)
+		then {10}
+		else {3};
 	
-	var hippo:Animal = new Animal(false);
-	var chicken:Animal = new Animal(true);
+	fun main:int(std:bool, property:(bool)->int)
+		if(std)
+		then {property(std)}
+		else {property(!std)};
 in
-
-	if(!false)
-	then {print(hippo.canFly())}
-	else {print(chicken.canFly())};
+	print(main(true, getTemperature));

@@ -1,0 +1,38 @@
+let
+
+  class Photo(flash:int, bw:int) {
+    fun getFlash:int() flash;
+    fun getBlackAndWhite:int() bw;
+  }
+
+  class Animal (paws:int) {
+    fun getPaws:int() paws;
+    fun canFly:bool() false;
+    fun canRide:bool() false;
+    fun makePhoto:Photo(flash:int, bw:int) new Photo(flash, bw);
+  }
+  
+  class FlyingAnimal extends Animal (wings:int) {
+    fun getWings:int() wings;
+    fun canFly:bool() true;
+    fun makePhoto:Photo(flash:bool, bw:int) new Photo(flash, bw);
+  }
+  
+  class RidingAnimal extends Animal (hours:int) {
+  	fun getHours:int() hours;
+  	fun canRide:bool() true;
+  	fun makePhoto:Photo(flash:int, bw:bool) new Photo(flash, bw);
+  }
+    
+  fun first:int(a:int, b:bool)
+  	1;
+  	
+  fun second:int(a:bool, b:int)
+    2;	
+    
+  var horse:RidingAnimal = new RidingAnimal(4, 6);
+      
+in
+  if(horse.canFly())
+  then {first(10, true)}
+  else {second(false, 30)};
