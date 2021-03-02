@@ -62,7 +62,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			System.out.println("Fun id " + n.id + " at line "+ n.getLine() +" already declared");
 			stErrors++;
 		} 
-		//creare una nuova hashmap per la symTable
+		//creo una nuova hashmap per la symTable
 		nestingLevel++;
 		Map<String, STentry> hmn = new HashMap<>();
 		symTable.add(hmn);
@@ -153,7 +153,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		nestingLevel++;
 		symTable.add(virtualTable);
 		
-		int prevNLDecOffset=decOffset; // mantiene il contatore dell'offset delle dichiarazioni al precedente nesting level 
+		int prevNLDecOffset=decOffset; // stores counter for offset of declarations at previous nesting level 
 		decOffset=n.superID!=null ? ((ClassTypeNode)entry.type).allMethods.size() : 0;
 		int fieldsOffset= n.superID!=null ? -((ClassTypeNode)entry.type).allFields.size()-1 : -1;
 		
@@ -168,12 +168,12 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			}
 			if(virtualTable.containsKey(f.id)) {
 				//se la virtual table contiene gia' un campo con quel nome vuol dire che
-				//sto ereditandoe  sto facendo overriding
+				//sto ereditando e sto facendo overriding
 				if(virtualTable.get(f.id).type instanceof MethodTypeNode) {
 					System.out.println("Cannot override method id " + f.id + " with a field at line "+ n.getLine());
 					stErrors++;
 				} else {
-					//sostituisco nuova STentry alla vecchia preservando l'offset che era nella vecchia STentry
+					//sostituisco una nuova STentry preservando l'offset che era nella vecchia STentry
 					f.offset = virtualTable.get(f.id).offset;
 					virtualTable.put(f.id, new STentry(nestingLevel,f.getType(),f.offset));
 					((ClassTypeNode)entry.type).allFields.set(-f.offset-1, f.getType());
@@ -195,7 +195,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				optimizer.add(m.id);
 			}
 			visit(m);
-			//se l'offset e' minore della lunghezza di allMethods vuol dire che ho visitato un metodo gi� dichiarato
+			//se l'offset e' minore della lunghezza di allMethods vuol dire che ho visitato un metodo gia` dichiarato
 			//quindi sto facendo overriding
 			if(m.offset < ((ClassTypeNode)entry.type).allMethods.size()) {
 				((ClassTypeNode)entry.type).allMethods.set(m.offset, (MethodTypeNode) m.getType());
