@@ -72,7 +72,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 		} else if(c.DIV() != null){
 			n = new DivNode(visit(c.exp(0)), visit(c.exp(1)));
 			n.setLine(c.DIV().getSymbol().getLine());
-		}// setLine added
+		}
         return n;		
 	}
 

@@ -96,7 +96,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 	public String visitNode(ClassNode n) {
 		if (print) printNode(n,n.id);
 		if(n.superID!=null) {
-			//se eredito creo una nuova dispatch table copiando tutto il contenuto da superclasse
+			//se eredito creo una nuova dispatch table copiando tutto il contenuto da quella della superclasse
 			dispatchTables.add(new ArrayList<>(dispatchTables.get(-n.superEntry.offset-2)));
 		} else {			
 			dispatchTables.add(new ArrayList<>());
@@ -121,7 +121,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 					//METTERE s SULLO HEAP
 					"push "+s,  //metto "s" sullo stack
 					"lhp", 		//metto sullo stack il primo indirizzo libero dello heap
-					"sw",		//scrivo "s" nel primo indirizzo libero dello hep
+					"sw",		//scrivo "s" nel primo indirizzo libero dello heap
 					
 					//INCREMENTO IL REGISTRO $hp
 					"lhp",      
@@ -199,8 +199,8 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 			
 			"push "+n.methodEntry.offset,
 			"add",			//calcolo l'indirizzo del corpo del metodo
-			"lw",			//va all'indirizzo
-			"js"			//jump al metodo
+			"lw",			//carico l'indirizzo
+			"js"			//salto al corpo del metodo
 		);
 	}
 	
@@ -401,8 +401,6 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		);	
 	}
 
-	// funzione();
-	
 	
 	@Override
 	public String visitNode(CallNode n) {
@@ -429,7 +427,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 						
 						"push "+n.entry.offset,
 						"add",			//calcolo l'indirizzo del corpo del metodo
-						"lw",			//va all'indirizzo
+						"lw",			//carico l'indirizzo
 						"js"			//salto al metodo
 						)
 				//se la chiamata non e' a un metodo, resta invariato

@@ -158,8 +158,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		int fieldsOffset= n.superID!=null ? -((ClassTypeNode)entry.type).allFields.size()-1 : -1;
 		
 		for (FieldNode f : n.fields) {
-			// gestione ottimizzata della ridefinizione di un campo nella stessa classe
-			// da' errore.
+			// gestione ottimizzata della ridefinizione di un campo nella stessa classe che deve dare errore
 			if(optimizer.contains(f.id)) {
 				System.out.println("Field id " + f.id + " already declared in class "+n.id);
 				stErrors++;
@@ -186,8 +185,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		}
 		
 		for (MethodNode m: n.methods) {
-			// gestione ottimizzata della ridefinizione di un metodo nella stessa classe
-			// da' errore.
+			// gestione ottimizzata della ridefinizione di un metodo nella stessa classe che deve dare errore
 			if(optimizer.contains(m.id)) {
 				System.out.println("Method id " + m.id + " already declared in class "+n.id);
 				stErrors++;
@@ -206,7 +204,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		
 		n.setType(new ClassTypeNode((ClassTypeNode)entry.type));
 		
-		//rimuovere la hashmap corrente poiche' esco dallo scope               
+		//rimuovo la hashmap corrente poiche' esco dallo scope               
 		symTable.remove(nestingLevel--);
 		decOffset = prevNLDecOffset;
 		return null;
@@ -226,7 +224,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				System.out.println("Cannot override method id " + n.id + " with a field at line "+ n.getLine());
 				stErrors++;
 			} else {
-				//sostituisco nuova STentry alla vecchia preservando l�offset che era nella vecchia STentry
+				//sostituisco nuova STentry preservando l'offset che era nella vecchia STentry
 				n.offset = virtualTable.get(n.id).offset;
 				virtualTable.put(n.id, new STentry(nestingLevel, n.getType(), n.offset));
 			}
@@ -251,7 +249,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			}
 		for (Node dec : n.declist) visit(dec);
 		visit(n.exp);
-		//rimuovere la hashmap corrente poiche' esco dallo scope               
+		//rimuovo la hashmap corrente poiche' esco dallo scope               
 		symTable.remove(nestingLevel--);
 		decOffset=prevNLDecOffset; // restores counter for offset of declarations at previous nesting level 
 		return null;
@@ -286,7 +284,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			System.out.println("Class id " + n.id + " at line "+ n.getLine() + " not declared");
 			stErrors++;
 		} else {
-			// recupero l'stentry della classe
+			// recupero l'STentry della classe
 			n.entry = symTable.get(0).get(n.id);
 			n.nl = nestingLevel;
 		}

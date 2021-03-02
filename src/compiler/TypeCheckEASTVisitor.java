@@ -121,7 +121,7 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		return null;
 	}
 	
-	// il controllo che ID1.ID2() fosse corretto, era già stato fatto nella visita della sym table. 
+	// il controllo che ID1.ID2() fosse corretto, era gia' stato fatto nella visita della sym table. 
 	@Override
 	public TypeNode visitNode(ClassCallNode n) throws TypeException {
 		if (print) printNode(n,n.classID);

@@ -22,7 +22,7 @@ public class TypeRels {
 				return a;
 			}
 			
-			return isSuperOptimized((RefTypeNode)a, (RefTypeNode)b);
+			return superclassAscension((RefTypeNode)a, (RefTypeNode)b);
 		}
 		// per tipi bool/int ritorna int se almeno uno dei due e'int, bool altrimenti
 		if(a instanceof IntTypeNode || a instanceof BoolTypeNode && b instanceof IntTypeNode || b instanceof BoolTypeNode) {
@@ -52,7 +52,7 @@ public class TypeRels {
 			
 			//se i controlli sono andati bene allora ritorna un tipo funzionale che ha come tipo di ritorno il risultato della
 			//chiamata ricorsiva (covarianza) e come tipo di parametro i-esimo il
-			//tipo che è sottotipo dell'altro (controvarianza)
+			//tipo che e' sottotipo dell'altro (controvarianza)
 			if(lca != null && subTypes.size() == a1.parlist.size()) {
 				return new ArrowTypeNode(subTypes, lca);
 			} else {
@@ -94,19 +94,19 @@ public class TypeRels {
 		return eq;
 	}
 	
-	private static RefTypeNode isSuperOptimized(RefTypeNode a, RefTypeNode b) {
-		// considera la classe di a controllando che le sue superclassi siano sottotipo di b
-		if(isSubtype(a, b)) {
+	private static RefTypeNode superclassAscension(RefTypeNode a, RefTypeNode b) {
+		// considera la classe di a e verifica che b sia sottotipo. Se non lo Ã¨ risale le superclassi di a.
+		if(isSubtype(b, a)) {
 			return a;
 		} else {
 			if(superType.containsKey(a.id)) {
-				return isSuperOptimized(new RefTypeNode(superType.get(a.id)), b);
+				return superclassAscension(new RefTypeNode(superType.get(a.id)), b);
 			} else {
 				return null;
 			}
 		}
 	}
-	
+	// controlla che b sia sopratipo di a nella mappa superType
 	private static boolean isSuperType(String a, String b) {
 		return superType.get(a).equals(b) || (superType.containsKey(superType.get(a)) ? isSuperType(superType.get(a), b) : false);
 	}
