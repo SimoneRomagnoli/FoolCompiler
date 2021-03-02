@@ -7,6 +7,16 @@ lfp
 push function2
 lfp
 lfp
+push -4
+add
+stm
+ltm
+lw
+ltm
+push 1
+sub
+lw
+lfp
 push -2
 add
 stm
@@ -59,16 +69,23 @@ js
 function1:
 cfp
 lra
+push 25
 lfp
 push 1
 add
 lw
+bleq label4
+push 0
+b label5
+label4:
+push 1
+label5:
 push 1
 beq label2
-push 3
+push 0
 b label3
 label2:
-push 10
+push 1
 label3:
 stm
 sra
@@ -87,16 +104,27 @@ push 1
 add
 lw
 push 1
-beq label4
+beq label6
+lfp
+push 26
+lfp
+push 5
+add
+stm
+ltm
+lw
+ltm
+push 1
+sub
+lw
+js
+b label7
+label6:
 lfp
 lfp
 push 1
 add
 lw
-push -1
-mult
-push 1
-add
 lfp
 push 3
 add
@@ -108,27 +136,11 @@ push 1
 sub
 lw
 js
-b label5
-label4:
-lfp
-lfp
-push 1
-add
-lw
-lfp
-push 3
-add
-stm
-ltm
-lw
-ltm
-push 1
-sub
-lw
-js
-label5:
+label7:
 stm
 sra
+pop
+pop
 pop
 pop
 pop
